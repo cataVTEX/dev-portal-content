@@ -193,7 +193,7 @@ This step will provide essential information regarding the available delivery an
 
 ---
 
-```json Response focus=13,20,25
+```json Response mark=13,20,25
 ```
 
 </CH.Code>
@@ -272,7 +272,7 @@ req.end();
 
 ---
 
-```json Response focus=6:20,24:35
+```json Response mark=6:20,24:35
 {
   "userProfileId": string,
   "profileProvider": string,
@@ -336,7 +336,7 @@ Below, we briefly explore each of these objects.
 
 <CH.Code  show={["orderForm.json"]}>
 
-```json orderForm.json focus=5,13,25,20
+```json orderForm.json mark=5,13,25,20
 ```
 
 </CH.Code>
@@ -349,7 +349,7 @@ With the `items` array obtained from the [Simulating a cart](#simulating-a-cart)
 
 <CH.Code  show={["orderForm.json"]}>
 
-```json orderForm.json focus=2:9
+```json orderForm.json mark=2:9
 {
   "items": [
       {
@@ -378,7 +378,7 @@ If the customer does not exist in your database, build the `clientProfileData` o
 
 <CH.Code  show={["orderForm.json"]}>
 
-```json orderForm.json focus=3:16
+```json orderForm.json mark=3:16
 {
   "items": [],
   "clientProfileData": {
@@ -413,7 +413,7 @@ If the customer already exists in your datababe, use the `clientProfileData` arr
 
 <CH.Code  show={["orderForm.json"]}>
 
-```json orderForm.json focus=3:5
+```json orderForm.json mark=3:5
 {
   "items": [],
   "clientProfileData": {
@@ -438,7 +438,7 @@ If the customer does not exist in your database, build the `shippingData.address
 
 <CH.Code  show={["orderForm.json"]}>
 
-```json orderForm.json focus=4:19
+```json orderForm.json mark=4:19
 {
   "items": [],
   "clientProfileData": {},
@@ -472,7 +472,7 @@ If the customer already exists in your datababe, use the `addressId` obtained fr
 
 <CH.Code  show={["orderForm.json"]}>
 
-```json orderForm.json focus=4:8
+```json orderForm.json mark=4:8
 {
   "items": [],
   "clientProfileData": {},
@@ -500,7 +500,7 @@ If the customer already exists in your datababe, use the `addressId` obtained fr
 
 <CH.Code  show={["orderForm.json"]}>
 
-```json orderForm.json focus=4:13
+```json orderForm.json mark=4:13
 {
   "items": [],
   "clientProfileData": {},
@@ -535,7 +535,7 @@ Use the options and information from the cart simulation (step one) response to 
 
 <CH.Code  show={["orderForm.json"]}>
 
-```json orderForm.json focus=8:17
+```json orderForm.json mark=8:17
 {
   "items": [],
   "clientProfileData": {},
@@ -764,7 +764,7 @@ req.end();
 
 ---
 
-```json Response focus=7,18,29
+```json Response mark=7,18,29
 {
   "orderForm": null,
   "transactionData": {
