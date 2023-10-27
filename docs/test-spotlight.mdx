@@ -564,11 +564,11 @@ For more complex examples, see the [Place order](https://developers.vtex.com/doc
 
 ## Step 3 - Handling the order
 
-This `orderForm` can now be sent as the body in the [Place order API request.](https://developers.vtex.com/docs/api-reference/checkout-api#put-/api/checkout/pub/orders)
+In this step, we will use the `orderForm` we built in the previous steps to place an order on the VTEX platform.
 
 ### Reviewing the `orderForm` of a new customer  
 
-When you are done consolidating all of your shopping cart information, your `orderForm` should look something like this.
+After building the `orderForm` of your order, ensure it adheres to a valid JSON format. For new customers, your `orderForm` should resemble this structure.
 
 <CH.Code show={["orderForm.json"]}>
 
@@ -638,7 +638,7 @@ When you are done consolidating all of your shopping cart information, your `ord
 
 ### Reviewing the `orderForm` of an existing customer
 
-For a returning customer, it may be something like this.
+For returning customers, the `orderForm` of your order should resemble this structure.
 
 <CH.Code show={["orderForm.json"]}>
 
@@ -686,16 +686,18 @@ For a returning customer, it may be something like this.
 
 ### Placing the order
 
-If you get a status `201 Created` response, take note of four pieces of information from its response content:
+Send a request to the [Place order API](https://developers.vtex.com/docs/api-reference/checkout-api#put-/api/checkout/pub/orders), using the `orderForm` you built as the request body.
 
-- `orderId`: ID of the order within VTEX’s Order Management System (OMS). You can find an  `orderId` in each object in the `orders` array.
-- `transactionId`: ID of the transaction, which can be found in the objects contained in the `transactionData.merchantTransactions` array.
-- `addressId`: if you're going to use the same address for shipping and billing, get this ID from the `orders[].shippingData.address` object.
-- `Vtex_CHKO_Auth`: authentication cookie that is sent with the response.
+Upon receiving a `201 Created` response, take note of these four pieces of information:
 
->❗ Starting from the placing of the order, you have five minutes to complete the payment process. Otherwise, the order is automatically canceled and tagged `incomplete`.
+- `orderId` - ID of the order within VTEX’s Order Management System (OMS). You can find the `orderId` within each object in the `orders` array.
+- `transactionId` - ID of the transaction, which can be found within the objects contained in the `transactionData.merchantTransactions` array.
+- `addressId` - ID of the customer address. If you plan to use the same address for shipping and billing, get this ID from the `orders[].shippingData.address` object.
+- `Vtex_CHKO_Auth` - authentication cookie that is sent with the response.
 
->❗ If you are using an email from a customer that already exists in your database, the account corresponding to the email address must be logged into your store. Otherwise, the process will fail.
+>❗ Starting from the moment the order is placed, you have a window of five minutes to complete the payment process. Failure to do so will result in automatic cancellation, and the order will be labeled as "incomplete."
+
+>❗ If you are using an email from an existing customer, ensure that the corresponding customer account is logged into your store. Otherwise, the process will fail.
 
 <CH.Code show={["Shell", "Python", "Node.js", "Response"]}>
 
@@ -706,7 +708,7 @@ curl --request put \
  --header 'Content-Type: application/json' \
  --header 'X-VTEX-API-AppKey: ' \
  --header 'X-VTEX-API-AppToken: ' \
- --data 'REPLACE_WITH_YOUR_ORDERFORM'
+ --data 'YOUR_ORDERFORM'
 ```
 
 ```python Python mark=3[37:49],3[51:63]
@@ -714,7 +716,7 @@ import http.client
 
 conn = http.client.HTTPSConnection("{accountname}.{environment}.com.br")
 
-payload = "REPLACE_WITH_YOUR_ORDERFORM"
+payload = "YOUR_ORDERFORM"
 
 headers = {
     'Accept': "application/json",
@@ -760,7 +762,7 @@ const req = http.request(options, function (res) {
  });
 });
 
-req.write(JSON.stringify(REPLACE_WITH_YOUR_ORDERFORM));
+req.write(JSON.stringify(YOUR_ORDERFORM));
 req.end();
 ```
 
@@ -840,19 +842,22 @@ req.end();
 
 ### Resolving the order payment
 
-With the `orderId` and `transactionId` values in hand, you must now inform VTEX of the payment data that should be used to resolve the order payment. To do this, use the [Send payment information API request](https://developers.vtex.com/docs/api-reference/payments-gateway-api#post-/api/pub/transactions/-transactionId-/payments). Note that there is also an alternative [private request for sending payment information](https://developers.vtex.com/docs/api-reference/payments-gateway-api#post-/api/pvt/transactions/-transactionId-/payments), that can be used to send saved credit card data.
+In this step, we will communicate the necessary payment data to VTEX for the finalization of the order's payment.
 
-The information you send in this step’s request body should be based on the `paymentData` section of your `orderForm`.
+- Send a request to the [Send payment information API request](https://developers.vtex.com/docs/api-reference/payments-gateway-api#post-/api/pub/transactions/-transactionId-/payments) API, considering the following:
 
-> ℹ️️ In the `fields` object, you can send an `addressId` to use an existing address or a new `address` object.
+  - Use the `orderId` value obtained in the previous step as the `orderId` query-string parameter.
+  - Use the `transactionId` value obtained in the previous step as a path parameter.
+  - Ensure that the request body is based on the `paymentData` section of your `orderForm`.
+  - In the `fields` object, use the `addressId` field to reference an existing address or introduce a new `address` object for an entirely new address.
 
->❗ Make sure that all value-related fields match the information sent in step four, when placing the order.
+> If you intend to send saved credit card data, you can use the [Send Payments With Saved Credit Card](https://developers.vtex.com/docs/api-reference/payments-gateway-api#post-/api/pvt/transactions/-transactionId-/payments) endpoint instead.
 
 <CH.Code show={["Shell", "Python", "Node.js", "Response"]}>
 
 ```shell Shell mark=2[17:29],2[31:43]
 curl --request post \
- --url 'https://{accountname}.vtexpayments.com.br/api/pub/transactions//payments' \
+ --url 'https://apiexamples.vtexpayments.com.br/api/pub/transactions/{{transactionId}}/payments?orderId={{orderId}}' \
  --header 'Content-Type: application/json' \
  --header 'X-VTEX-API-AppKey: ' \
  --header 'X-VTEX-API-AppToken: ' \
@@ -862,7 +867,7 @@ curl --request post \
 ```python Python mark=3[37:49],3[51:63]
 import http.client
 
-conn = http.client.HTTPSConnection("{accountname}.vtexpayments.com.br")
+conn = http.client.HTTPSConnection("apiexamples.vtexpayments.com.br")
 
 payload = "[{\"paymentSystem\":4,\"installments\":1,\"currencyCode\":\"BRL\",\"value\":100,\"installmentsInterestRate\":0,\"installmentsValue\":100,\"referenceValue\":100,\"fields\":{\"holderName\":\"UserTest\",\"cardNumber\":\"5378244888889174\",\"validationCode\":\"231\",\"dueDate\":\"10/19\",\"document\":\"8041734561\",\"accountId\":\"\",\"address\":null,\"callbackUrl\":\"\"},\"transaction\":{\"id\":\"{{transactionId}}\",\"merchantName\":\"{{accountName}}\"}}]"
 
@@ -872,7 +877,7 @@ headers = {
     'X-VTEX-API-AppToken': ""
     }
 
-conn.request("post", "/api/pub/transactions//payments", payload, headers)
+conn.request("post", "/api/pub/transactions/%7B%7BtransactionId%7D%7D/payments?orderId=%7B%7BorderId%7D%7D", payload, headers)
 
 res = conn.getresponse()
 data = res.read()
@@ -885,9 +890,9 @@ const http = require("https");
 
 const options = {
  "method": "post",
- "hostname": "{accountname}.vtexpayments.com.br",
+ "hostname": "apiexamples.vtexpayments.com.br",
  "port": null,
- "path": "/api/pub/transactions//payments",
+ "path": "/api/pub/transactions/%7B%7BtransactionId%7D%7D/payments?orderId=%7B%7BorderId%7D%7D",
  "headers": {
   "Content-Type": "application/json",
   "X-VTEX-API-AppKey": "",
@@ -935,21 +940,20 @@ req.end();
 
 ---
 
-```json Response
-{}
+```txt Response
+200 OK
 ```
 
 </CH.Code>
 
 ---
 
-## Step 4 - Processing the order
+## Step 4 - Processing and validating the order
 
-Finally, you must request the processing of the order with the [Process order API request](https://developers.vtex.com/docs/api-reference/checkout-api#post-/api/checkout/pub/gatewayCallback/-orderGroup-).
+In this final step,
+Send a request to the [Process order](https://developers.vtex.com/docs/api-reference/checkout-api#post-/api/checkout/pub/gatewayCallback/-orderGroup-) API. If the payment is processed without any issues, the order will be successfully placed. In case of payment problems, you may receive a status `500` error.
 
-At this point, if everything is ok with the payment, the order should be placed. Otherwise, you should get a `status 500` error.
-
-> Be aware that this process uses the gateway connectors configured in your VTEX environment. Be careful to avoid any unwanted charges or unexpected payment denials.
+> Note that this process uses the gateway connectors configured in your VTEX environment. Be careful to prevent any unwanted charges or unexpected payment denials.
 
 <CH.Code show={["Shell", "Python", "Node.js", "Response"]}>
 
@@ -1029,9 +1033,7 @@ req.end();
 
 ### Verifying the order placement
 
-You should be able to verify your order was in fact placed in the [Order management module](https://help.vtex.com/en/tutorial/orders-list--tutorials_200#) in VTEX Admin.
-
-You can also use the API requests [Get order](https://developers.vtex.com/docs/api-reference/orders-api#get-/api/oms/pvt/orders/-orderId-) and [List orders](https://developers.vtex.com/docs/api-reference/orders-api#get-/api/oms/pvt/orders) for this purpose.
+Finally, you can verify if your order was correctly placed in the [Order management](https://help.vtex.com/en/tutorial/orders-list--tutorials_200#) in the VTEX Admin. Alternatively, you can check the order using the [Get order](https://developers.vtex.com/docs/api-reference/orders-api#get-/api/oms/pvt/orders/-orderId-) and [List orders](https://developers.vtex.com/docs/api-reference/orders-api#get-/api/oms/pvt/orders) endpoints.
 
 <CH.Code show={["Shell", "Python", "Node.js", "Body"]}>
 
