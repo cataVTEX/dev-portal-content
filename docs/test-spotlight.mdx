@@ -1,10 +1,10 @@
 ---
-title: "Create a regular order using the Checkout API"
+title: "Creating a regular order with the Checkout API"
 slug: "test-spotlight"
 hidden: false
 createdAt: "2023-07-18T17:08:52.219Z"
 updatedAt: "2023-07-18T17:08:52.219Z"
-excerpt: "Learn how place orders using VTEX APIs to handle shopping carts and checkout."
+excerpt: "Learn how to place orders using VTEX APIs to handle shopping carts and checkout."
 hideTOC: true
 ---
 
@@ -171,14 +171,14 @@ Before proceeding any further, ensure that you have a valid `appKey` and `appTok
 
 ## Step 1 - Assessing cart requirements
 
-In this step, we will check if your store is able to fulfill the cart and collect the necessary information about the order to ensure a smooth order placement process in the subsequent steps.
+In this step, we will check if your store is able to fulfill the cart and collect essential order information to ensure a smooth order placement process in the subsequent steps.
 
 ### Simulating a cart
 
 This step will provide essential information regarding the available delivery and payment options for the specific combination of items in the cart.
 
 - Send a request to the [`Cart simulation`](https://developers.vtex.com/docs/api-reference/checkout-api#post-/api/checkout/pub/orderForms/simulation) API endpoint. You must specify an SKU ID (`items.id`), the number of items in the cart (`items.quantity`), and the Seller's ID (`items.seller`) in the request body.
-- Take note of the `items`, `shippingData.logisticsInfo`, and `paymentData` objects as we will use this data in the following steps.
+- Take note of the `items`, `shippingData.logisticsInfo`, and `paymentData` objects, as we will use this data in the following steps.
 
 <CH.Code show={["Shell", "Python", "Node.js", "Body"]}>
 
@@ -205,7 +205,7 @@ This step will provide essential information regarding the available delivery an
 This step will check if the email used to place the order is already related to a customer in your database. This verification serves to not only enhance operational efficiency but also proactively prevent potential permission-related issues.
 
 - Send a request to the [`Get client by email`](https://developers.vtex.com/docs/api-reference/checkout-api#get-/api/checkout/pub/profiles) endpoint to check for existing profiles associated with a specific email address. If the response to this request returns any content, it means that you already have this shopper’s information in your database. In such cases, you can seamlessly proceed to utilize this information in the subsequent steps, sparing the shopper from the need to provide it again.
-- If applicable, take note of the `availableAddresses` and `userProfile` objects as we will use this data in the following steps.
+- If applicable, take note of the `availableAddresses` and `userProfile` objects, as we will use this data in the following steps.
 
 <CH.Code show={["Shell", "Python", "Node.js", "Body"]}>
 
@@ -332,7 +332,7 @@ Below, we will briefly examine the key elements that make up the [`orderForm`](h
 - `shippingData.logisticsInfo`
 - `paymentData`
 
-Note that while an `orderForm` can have various element, a standard order typically consists of the ones mentioned above.
+Note that while an `orderForm` can have various elements, a standard order typically consists of the ones mentioned above.
 
 <CH.Code  show={["orderForm.json"]}>
 
@@ -409,7 +409,7 @@ Note that while an `orderForm` can have various element, a standard order typica
 
 ### `clientProfileData`: Existing customers
 
-If the customer already exists in your datababe, use the `userProfile.email` obtained in the [Checking for existing customer](#checking-for-existing-customer) step to build the `clientProfileData` object. Note that the email address is enough to register the order to the shopper’s existing account.
+If the customer already exists in your database, use the `userProfile.email` obtained in the [Checking for existing customer](#checking-for-existing-customer) step to build the `clientProfileData` object. Note that the email address is enough to register the order to the shopper’s existing account.
 
 <CH.Code  show={["orderForm.json"]}>
 
@@ -467,7 +467,7 @@ If the customer already exists in your datababe, use the `userProfile.email` obt
 
 ### `shippingData.address`: Existing customers
 
-If the customer already exists in your datababe, use the desired `addressId` obtained from the [Checking for existing customer](#checking-for-existing-customer) step to build the `shippingData.address` block.
+If the customer already exists in your database, use the desired `addressId` obtained from the [Checking for existing customer](#checking-for-existing-customer) step to build the `shippingData.address` block.
 
 <CH.Code  show={["orderForm.json"]}>
 
@@ -529,8 +529,8 @@ If the customer already exists in your datababe, use the desired `addressId` obt
 `paymentData.payments` contains information regarding the chosen payment method and installment preferences for the order. Build the `paymentData.payments` array considering the response obtained from the [Simulating a cart](#simulating-a-cart) step. For each payment option, define the following elements:
 
 - `paymentSystem` - ID of the desired payment system.
-- `referenceValue` - reference value ysed to calculate interest rates. If no interest applies to the order, the `value` and `referenceValue` should be the same.
-- `value` - total amount to be payed by the shopper.
+- `referenceValue` - reference value used to calculate interest rates. If no interest applies to the order, the `value` and `referenceValue` should be the same.
+- `value` - total amount to be paid by the shopper.
 - `installments` - number of installments.
 
 For more complex examples, see the [Place order](https://developers.vtex.com/docs/api-reference/checkout-api#put-/api/checkout/pub/orders) API reference.
@@ -1023,8 +1023,8 @@ req.end();
 
 ---
 
-```json Response
-{}
+```txt Response
+200 OK
 ```
 
 </CH.Code>
