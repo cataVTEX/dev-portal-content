@@ -19,7 +19,6 @@ This step-by-step guide will walk you through the process of using the [Checkout
 
 <CH.Spotlight>
 
-
 <CH.Code>
 
 ```shell Shell mark=2[18:30],2[32:44],5[32:39],6[34:43]
@@ -105,7 +104,7 @@ req.end();
   "ignoreProfileData": boolean,
   "isCheckedIn": boolean,
   "itemMetadata": {},
-  "items": {},
+  "items": [],
   "itemsOrdination": {},
   "loggedIn": boolean,
   "marketingData": {},
@@ -114,8 +113,8 @@ req.end();
   "orderFormId": string,
   "paymentData": {},  
   "ratesAndBenefitsData": {},
-  "salesChannel": "1",
-  "selectableGifts": {},
+  "salesChannel": string,
+  "selectableGifts": [],
   "sellers": {},
   "shippingData": {},
   "storeId": {},
@@ -181,7 +180,7 @@ This step will provide essential information regarding the available delivery an
 - Send a request to the [`Cart simulation`](https://developers.vtex.com/docs/api-reference/checkout-api#post-/api/checkout/pub/orderForms/simulation) API endpoint. You must specify an SKU ID (`items.id`), the number of items in the cart (`items.quantity`), and the Seller's ID (`items.seller`) in the request body.
 - Take note of the `items`, `shippingData.logisticsInfo`, and `paymentData` objects as we will use this data in the following steps.
 
-<CH.Code>
+<CH.Code show={["Shell", "Python", "Node.js", "Body"]}>
 
 ```shell Shell mark=2[18:30],2[32:44],5[32:39],6[34:43]
 ```
@@ -208,7 +207,7 @@ This step will check if the customer already exists in your database. This verif
 - Send a request to the [`Get client by email`](https://developers.vtex.com/docs/api-reference/checkout-api#get-/api/checkout/pub/profiles) endpoint to check for existing profiles associated with a specific email address. If the response to this request returns any content, it means that you already have this shopper’s information in your database. In such cases, you can seamlessly proceed to utilize this information in the subsequent steps, sparing the shopper from the need to provide it again.
 - If applicable, take note of the `availableAddresses` and `userProfile` objects as we will use this data in the following steps.
 
-<CH.Code>
+<CH.Code show={["Shell", "Python", "Node.js", "Body"]}>
 
 ```shell Shell mark=2[18:30],2[32:44],2[85:98],5[32:39],6[34:43]
 curl --request get \
@@ -705,7 +704,7 @@ curl --request put \
  --header 'Content-Type: application/json' \
  --header 'X-VTEX-API-AppKey: ' \
  --header 'X-VTEX-API-AppToken: ' \
- --data '{"items":[{"id":"123456789","quantity":1,"seller":"1"}],"clientProfileData":{"email":"string","firstName":"string","lastName":"string","documentType":"string","document":"string","phone":"string","corporateName":"string","tradeName":"string","corporateDocument":"string","stateInscription":"string","corporatePhone":"string","isCorporate":false},"shippingData":{"address":{"addressType":"residential","receiverName":"string","addressId":"string","postalCode":"string","city":"string","state":"string","country":"string","street":"string","number":"string","neighborhood":"string","complement":"string","reference":"string","geoCoordinates":[-47.924747467041016]},"logisticsInfo":[{"itemIndex":0,"selectedSla":"string","lockTTL":"string","shippingEstimate":"string","price":0,"deliveryWindow":{"startDateUtc":"string","endDateUtc":"string","price":0,"lisPrice":0,"tax":0}}],"updateStatus":"string"},"paymentData":{"giftCards":[{"redemptionCode":"HYUO-TEZZ-QFFT-HTFR","value":500,"balance":500,"name":"name-example","id":"1390324156495k195pmab4rall3di","inUse":true,"isSpecialCard":false}],"giftCardMessages":["?"],"paymentSystems":[{"id":2,"name":"Visa","groupName":"creditCardPaymentGroup","validator":{"regex":"^4","mask":"9999 9999 9999 9999","cardCodeRegex":"[^0-9]","cardCodeMask":"999","weights":[0]},"stringId":"string","template":"string","requiresDocument":false,"selected":false,"isCustom":false,"description":"string"}],"payments":[{"accountId":"string","bin":"string","installments":0,"paymentSystem":"string","referenceValue":0,"value":0}],"updateStatus":"string"},"marketingData":{"coupon":"string","utmSource":"string","utmMedium":"string","utmCampaign":"string","utmiPage":"string","utmiPart":"string","utmiCampaign":"string"},"openTextField":"string","salesAssociateData":{"salesAssociateId":"string"}}'
+ --data 'REPLACE_WITH_YOUR_ORDERFORM'
 ```
 
 ```python Python mark=3[37:49],3[51:63]
@@ -713,7 +712,7 @@ import http.client
 
 conn = http.client.HTTPSConnection("{accountname}.{environment}.com.br")
 
-payload = "{\"items\":[{\"id\":\"123456789\",\"quantity\":1,\"seller\":\"1\"}],\"clientProfileData\":{\"email\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\",\"documentType\":\"string\",\"document\":\"string\",\"phone\":\"string\",\"corporateName\":\"string\",\"tradeName\":\"string\",\"corporateDocument\":\"string\",\"stateInscription\":\"string\",\"corporatePhone\":\"string\",\"isCorporate\":false},\"shippingData\":{\"address\":{\"addressType\":\"residential\",\"receiverName\":\"string\",\"addressId\":\"string\",\"postalCode\":\"string\",\"city\":\"string\",\"state\":\"string\",\"country\":\"string\",\"street\":\"string\",\"number\":\"string\",\"neighborhood\":\"string\",\"complement\":\"string\",\"reference\":\"string\",\"geoCoordinates\":[-47.924747467041016]},\"logisticsInfo\":[{\"itemIndex\":0,\"selectedSla\":\"string\",\"lockTTL\":\"string\",\"shippingEstimate\":\"string\",\"price\":0,\"deliveryWindow\":{\"startDateUtc\":\"string\",\"endDateUtc\":\"string\",\"price\":0,\"lisPrice\":0,\"tax\":0}}],\"updateStatus\":\"string\"},\"paymentData\":{\"giftCards\":[{\"redemptionCode\":\"HYUO-TEZZ-QFFT-HTFR\",\"value\":500,\"balance\":500,\"name\":\"name-example\",\"id\":\"1390324156495k195pmab4rall3di\",\"inUse\":true,\"isSpecialCard\":false}],\"giftCardMessages\":[\"?\"],\"paymentSystems\":[{\"id\":2,\"name\":\"Visa\",\"groupName\":\"creditCardPaymentGroup\",\"validator\":{\"regex\":\"^4\",\"mask\":\"9999 9999 9999 9999\",\"cardCodeRegex\":\"[^0-9]\",\"cardCodeMask\":\"999\",\"weights\":[0]},\"stringId\":\"string\",\"template\":\"string\",\"requiresDocument\":false,\"selected\":false,\"isCustom\":false,\"description\":\"string\"}],\"payments\":[{\"accountId\":\"string\",\"bin\":\"string\",\"installments\":0,\"paymentSystem\":\"string\",\"referenceValue\":0,\"value\":0}],\"updateStatus\":\"string\"},\"marketingData\":{\"coupon\":\"string\",\"utmSource\":\"string\",\"utmMedium\":\"string\",\"utmCampaign\":\"string\",\"utmiPage\":\"string\",\"utmiPart\":\"string\",\"utmiCampaign\":\"string\"},\"openTextField\":\"string\",\"salesAssociateData\":{\"salesAssociateId\":\"string\"}}"
+payload = "REPLACE_WITH_YOUR_ORDERFORM"
 
 headers = {
     'Accept': "application/json",
@@ -759,107 +758,7 @@ const req = http.request(options, function (res) {
  });
 });
 
-req.write(JSON.stringify({
-  items: [{id: '123456789', quantity: 1, seller: '1'}],
-  clientProfileData: {
-    email: 'string',
-    firstName: 'string',
-    lastName: 'string',
-    documentType: 'string',
-    document: 'string',
-    phone: 'string',
-    corporateName: 'string',
-    tradeName: 'string',
-    corporateDocument: 'string',
-    stateInscription: 'string',
-    corporatePhone: 'string',
-    isCorporate: false
-  },
-  shippingData: {
-    address: {
-      addressType: 'residential',
-      receiverName: 'string',
-      addressId: 'string',
-      postalCode: 'string',
-      city: 'string',
-      state: 'string',
-      country: 'string',
-      street: 'string',
-      number: 'string',
-      neighborhood: 'string',
-      complement: 'string',
-      reference: 'string',
-      geoCoordinates: [-47.924747467041016]
-    },
-    logisticsInfo: [
-      {
-        itemIndex: 0,
-        selectedSla: 'string',
-        lockTTL: 'string',
-        shippingEstimate: 'string',
-        price: 0,
-        deliveryWindow: {startDateUtc: 'string', endDateUtc: 'string', price: 0, lisPrice: 0, tax: 0}
-      }
-    ],
-    updateStatus: 'string'
-  },
-  paymentData: {
-    giftCards: [
-      {
-        redemptionCode: 'HYUO-TEZZ-QFFT-HTFR',
-        value: 500,
-        balance: 500,
-        name: 'name-example',
-        id: '1390324156495k195pmab4rall3di',
-        inUse: true,
-        isSpecialCard: false
-      }
-    ],
-    giftCardMessages: ['?'],
-    paymentSystems: [
-      {
-        id: 2,
-        name: 'Visa',
-        groupName: 'creditCardPaymentGroup',
-        validator: {
-          regex: '^4',
-          mask: '9999 9999 9999 9999',
-          cardCodeRegex: '[^0-9]',
-          cardCodeMask: '999',
-          weights: [0]
-        },
-        stringId: 'string',
-        template: 'string',
-        requiresDocument: false,
-        selected: false,
-        isCustom: false,
-        description: 'string'
-      }
-    ],
-    payments: [
-      {
-        accountId: 'string',
-        bin: 'string',
-        installments: 0,
-        paymentSystem: 'string',
-        referenceValue: 0,
-        value: 0
-      }
-    ],
-    updateStatus: 'string'
-  },
-  marketingData: {
-    coupon: 'string',
-    utmSource: 'string',
-    utmMedium: 'string',
-    utmCampaign: 'string',
-    utmiPage: 'string',
-    utmiPart: 'string',
-    utmiCampaign: 'string'
-  },
-  openTextField: 'string',
-  salesAssociateData: {salesAssociateId: 'string'}
-}));
+req.write(JSON.stringify(REPLACE_WITH_YOUR_ORDERFORM));
 req.end();
 ```
 
@@ -1131,5 +1030,24 @@ req.end();
 You should be able to verify your order was in fact placed in the [Order management module](https://help.vtex.com/en/tutorial/orders-list--tutorials_200#) in VTEX Admin.
 
 You can also use the API requests [Get order](https://developers.vtex.com/docs/api-reference/orders-api#get-/api/oms/pvt/orders/-orderId-) and [List orders](https://developers.vtex.com/docs/api-reference/orders-api#get-/api/oms/pvt/orders) for this purpose.
+
+<CH.Code show={["Shell", "Python", "Node.js", "Body"]}>
+
+```shell Shell mark=2[18:30],2[32:44],5[32:39],6[34:43]
+```
+
+```python Python mark=3[37:49],3[51:63]
+```
+
+```js Node.js mark=5[15:27],5[29:41]
+```
+
+---
+
+```json Response
+{}
+```
+
+</CH.Code>
 
 </CH.Spotlight>
